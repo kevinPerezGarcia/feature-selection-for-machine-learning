@@ -3,7 +3,7 @@ import sys
 sys.path.append('../utils')
 
 from preamble import preamble
-X_train, X_test, y_train, y_test = preamble('data/dataset_1.csv')
+X_train, X_test, y_train, y_test = preamble('../data/dataset_1.csv')
 ```
 
 ```{python}
@@ -15,6 +15,8 @@ X_train.dtypes.unique()
 ```{python}
 X_train.nunique()
 ```
+
+## Variables constantes
 
 ### Asumiendo que las características de X son categóricas y numéricas
 
@@ -46,4 +48,43 @@ X_test = sel.transform(X_test)
 
 print(f'The number of columns in X_train is {X_train.shape[1]}')
 print(f'The number of columns in X_test is {X_test.shape[1]}')
+```
+
+## Variables casi constantes
+
+```{python}
+X_train, X_test, y_train, y_test = preamble('../data/dataset_1.csv')
+```
+
+### Enfoque de frecuencia absoluta
+
+```{python}
+quasi_constant_features_FA = [
+    feature for feature in X_train.columns
+    if  X_train[feature].value_counts(normalize=True).max() > 0.998
+]
+
+print(len(quasi_constant_features_FA))
+```
+
+### Enfoque de umbral de varianza
+
+```{python}
+from sklearn.feature_selection import VarianceThreshold
+
+sel = VarianceThreshold(threshold=0.01)
+sel.fit(X_train)
+```
+
+```{python}
+quasi_constant_features_VT = X_train.columns[~sel.get_support()]
+print(len(quasi_constant_features_VT))
+print(len(quasi_constant_features_FA) - len(quasi_constant_features_VT))
+```
+
+```{python}
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+
+print(f'The number of columns in X_train is {X_train.shape[1]}')
 ```
