@@ -1,7 +1,12 @@
 ```{python}
+from pprint import pprint
 import sys
 sys.path.append('../utils')
+```
 
+# Métodos de filtrado básicos
+
+```{python}
 from preamble import preamble
 X_train, X_test, y_train, y_test = preamble('../data/dataset_1.csv')
 ```
@@ -87,4 +92,55 @@ X_train = sel.transform(X_train)
 X_test = sel.transform(X_test)
 
 print(f'The number of columns in X_train is {X_train.shape[1]}')
+```
+
+## Variables duplicadas
+
+```{python}
+X_train, X_test, y_train, y_test = preamble('../data/dataset_1.csv')
+```
+
+```{python}
+from feature_engine.selection import DropConstantFeatures
+
+sel = DropConstantFeatures(tol=1, variables=None, missing_values='raise')
+
+sel.fit(X_train)
+
+print(sel.features_to_drop_)
+print(len(sel.features_to_drop_))
+
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+```
+
+```{python}
+sel = DropConstantFeatures(tol=0.998)
+
+sel.fit(X_train)
+
+print(sel.features_to_drop_)
+print(len(sel.features_to_drop_))
+
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+
+X_train.shape, X_test.shape
+```
+
+```{python}
+from feature_engine.selection import DropDuplicateFeatures
+
+sel = DropDuplicateFeatures()
+sel.fit(X_train)
+
+pprint.pprint(sel.duplicated_feature_sets_)
+
+print(sel.features_to_drop_)
+print(len(sel.features_to_drop_))
+
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+
+X_train.shape, X_test.shape
 ```
