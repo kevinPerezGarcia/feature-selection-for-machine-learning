@@ -8,3 +8,7 @@
 # folders
 _notebooks
 _old_datasets
+
+# Quarto outputs
+**/*_files/
+**/*.html
