@@ -1,0 +1,76 @@
+# Métodos de filtro basados en correlación
+
+## Método de eliminación secuencial por correlación
+
+```{python}
+from preamble import preamble
+X_train, X_test, y_train, y_test = preamble("../data/dataset_2.csv")
+```
+
+```{python}
+from feature_engine.selection import DropCorrelatedFeatures
+
+sel = DropCorrelatedFeatures(
+    threshold=0.8,
+    method='pearson',
+    missing_values='ignore'
+)
+
+sel.fit(X_train)
+
+sel.correlated_feature_sets_
+
+sel.features_to_drop_
+
+len(sel.features_to_drop_)
+
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+
+X_train.shape, X_test.shape
+```
+
+## Método por grupos correlacionados
+
+```{python}
+from preamble import preamble
+X_train, X_test, y_train, y_test = preamble('../data/dataset_2.csv')
+```
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(
+    n_estimators=10,
+    random_state=20,
+    n_jobs=4,
+)
+```
+
+```{python}
+from feature_engine.selection import SmartCorrelatedSelection
+
+sel = SmartCorrelatedSelection(
+    threshold=0.8,
+    method='pearson',
+    missing_values='raise',
+    selection_method='model_performance',
+    estimator=rf,
+    scoring='roc_auc',
+    cv=3,
+)
+```
+
+```{python}
+sel.fit(X_train, y_train)
+
+sel.correlated_feature_sets_
+
+sel.features_to_drop_
+
+print(len(sel.features_to_drop_))
+
+X_train = sel.transform(X_train)
+X_test = sel.transform(X_test)
+
+print(X_train.shape, X_test.shape)
+```
